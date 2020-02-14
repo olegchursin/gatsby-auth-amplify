@@ -1,97 +1,199 @@
-<!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
-<p align="center">
-  <a href="https://www.gatsbyjs.org">
-    <img alt="Gatsby" src="https://www.gatsbyjs.org/monogram.svg" width="60" />
-  </a>
-</p>
-<h1 align="center">
-  Gatsby's default starter
-</h1>
+# Gatsby Auth with AWS Amplify
 
-Kick off your project with this default boilerplate. This starter ships with the main Gatsby configuration files you might need to get up and running blazing fast with the blazing fast app generator for React.
+## Create new Gatsby project
 
-_Have another more specific idea? You may want to check out our vibrant collection of [official and community-created starters](https://www.gatsbyjs.org/docs/gatsby-starters/)._
+`gatsby new gatsby-auth-amplify`
 
-## 🚀 Quick start
+## Add TS (optional)
 
-1.  **Create a Gatsby site.**
+This step is optional but highly recommended
 
-    Use the Gatsby CLI to create a new site, specifying the default starter.
+### Add TS plugin
 
-    ```shell
-    # create a new Gatsby site using the default starter
-    gatsby new my-default-starter https://github.com/gatsbyjs/gatsby-starter-default
-    ```
+```BASH
+yarn add gatsby-plugin-typescript
+```
 
-1.  **Start developing.**
+### Add TypeScript definitions
 
-    Navigate into your new site’s directory and start it up.
+```BASH
+yarn add -D @types/react @types/react-dom @types/node
+```
 
-    ```shell
-    cd my-default-starter/
-    gatsby develop
-    ```
+### Change files extensions
 
-1.  **Open the source code and start editing!**
+`.js` —> `.tsx`
 
-    Your site is now running at `http://localhost:8000`!
+## Hook up AWS Amplify Framework
 
-    _Note: You'll also see a second link: _`http://localhost:8000/___graphql`_. This is a tool you can use to experiment with querying your data. Learn more about using this tool in the [Gatsby tutorial](https://www.gatsbyjs.org/tutorial/part-five/#introducing-graphiql)._
+Auth is handled by AWS Cognito
 
-    Open the `my-default-starter` directory in your code editor of choice and edit `src/pages/index.js`. Save your changes and the browser will update in real time!
+Steps:
 
-## 🧐 What's inside?
+1. Install AWS Amplify CLI
+2. Configure Amplify
+3. Initialize inside Gatsby project
+4. Add Auth API
+5. Deploy the config to AWS
+6. Protect the ‘protected-page’
 
-A quick look at the top-level files and directories you'll see in a Gatsby project.
+### Step 1. Install AWS Amplify CLI
 
-    .
-    ├── node_modules
-    ├── src
-    ├── .gitignore
-    ├── .prettierrc
-    ├── gatsby-browser.js
-    ├── gatsby-config.js
-    ├── gatsby-node.js
-    ├── gatsby-ssr.js
-    ├── LICENSE
-    ├── package-lock.json
-    ├── package.json
-    └── README.md
+```BASH
+npm install -g @aws-amplify/cli
+amplify --version
+```
 
-1.  **`/node_modules`**: This directory contains all of the modules of code that your project depends on (npm packages) are automatically installed.
+### Configure Amplify
 
-2.  **`/src`**: This directory will contain all of the code related to what you will see on the front-end of your site (what you see in the browser) such as your site header or a page template. `src` is a convention for “source code”.
+```BASH
+amplify configure
+```
 
-3.  **`.gitignore`**: This file tells git which files it should not track / not maintain a version history for.
+Actionable bash response:
 
-4.  **`.prettierrc`**: This is a configuration file for [Prettier](https://prettier.io/). Prettier is a tool to help keep the formatting of your code consistent.
+```BASH
+Sign in to your AWS administrator account:
+https://console.aws.amazon.com/
+Press Enter to continue
+```
 
-5.  **`gatsby-browser.js`**: This file is where Gatsby expects to find any usage of the [Gatsby browser APIs](https://www.gatsbyjs.org/docs/browser-apis/) (if any). These allow customization/extension of default Gatsby settings affecting the browser.
+Actionable bash response:
 
-6.  **`gatsby-config.js`**: This is the main configuration file for a Gatsby site. This is where you can specify information about your site (metadata) like the site title and description, which Gatsby plugins you’d like to include, etc. (Check out the [config docs](https://www.gatsbyjs.org/docs/gatsby-config/) for more detail).
+```BASH
+Specify the AWS Region
+? region:  (Use arrow keys)
+❯ us-east-1
+  us-east-2
+  us-west-2
+  eu-west-1
+  eu-west-2
+  eu-central-1
+  ap-northeast-1
+```
 
-7.  **`gatsby-node.js`**: This file is where Gatsby expects to find any usage of the [Gatsby Node APIs](https://www.gatsbyjs.org/docs/node-apis/) (if any). These allow customization/extension of default Gatsby settings affecting pieces of the site build process.
+You will also need to provide user name and configure IAM user within the console.
+NB: Save you credentials (download .csv or copy access keys)
 
-8.  **`gatsby-ssr.js`**: This file is where Gatsby expects to find any usage of the [Gatsby server-side rendering APIs](https://www.gatsbyjs.org/docs/ssr-apis/) (if any). These allow customization of default Gatsby settings affecting server-side rendering.
+Actionable bash response:
 
-9.  **`LICENSE`**: Gatsby is licensed under the MIT license.
+```BASH
+Enter the access key of the newly created user:
+? accessKeyId:  AKIA355I4O**********
+? secretAccessKey:  ehf7gWSzPULXtNN0d0v******************
+This would update/create the AWS Profile in your local machine
+? Profile Name:  olegchursin
 
-10. **`package-lock.json`** (See `package.json` below, first). This is an automatically generated file based on the exact versions of your npm dependencies that were installed for your project. **(You won’t change this file directly).**
+Successfully set up the new user.
+```
 
-11. **`package.json`**: A manifest file for Node.js projects, which includes things like metadata (the project’s name, author, etc). This manifest is how npm knows which packages to install for your project.
+### Step 2. Initialize inside Gatsby project
 
-12. **`README.md`**: A text file containing useful reference information about your project.
+from the root of your project run:
 
-## 🎓 Learning Gatsby
+```BASH
+amplify init
+```
 
-Looking for more guidance? Full documentation for Gatsby lives [on the website](https://www.gatsbyjs.org/). Here are some places to start:
+Actionable bash response:
 
-- **For most developers, we recommend starting with our [in-depth tutorial for creating a site with Gatsby](https://www.gatsbyjs.org/tutorial/).** It starts with zero assumptions about your level of ability and walks through every step of the process.
+```BASH
+? Enter a name for the project gatsby-auth-amplify
+? Enter a name for the environment dev
+? Choose your default editor: Visual Studio Code
+? Choose the type of app that you're building javascript
+Please tell us about your project
+? What javascript framework are you using react
+? Source Directory Path:  src
+? Distribution Directory Path: build
+? Build Command:  npm run-script build
+? Start Command: npm run-script start
+```
 
-- **To dive straight into code samples, head [to our documentation](https://www.gatsbyjs.org/docs/).** In particular, check out the _Guides_, _API Reference_, and _Advanced Tutorials_ sections in the sidebar.
+Actionable bash response:
 
-## 💫 Deploy
+```BASH
+Do you want to use an AWS profile? Yes
+? Please choose the profile you want to use default
+Adding backend environment dev to AWS Amplify Console app: d1mhcdbiatabfc
+⠧ Initializing project in the cloud...
+```
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/gatsbyjs/gatsby-starter-default)
+Explore the newly generated `amplify` folder: [Screenshot: amplify folder structure](https://share.getcloudapp.com/mXuqRmY2)
 
-<!-- AUTO-GENERATED-CONTENT:END -->
+### Step 3. Add Auth API
+
+```BASH
+amplify add auth
+```
+
+Actionable bash response:
+
+```BASH
+Do you want to use the default authentication and security configuration? Default configuration
+ Warning: you will not be able to edit these selections.
+ How do you want users to be able to sign in? Username
+ Do you want to configure advanced settings? No, I am done.
+Successfully added resource gatsbyauthamplifycba7570a locally
+```
+
+### Step 4. Deploy the config to AWS
+
+```BASH
+amplify push
+```
+
+Actionable bash response:
+
+```BASH
+✔ Successfully pulled backend environment dev from the cloud.
+
+Current Environment: dev
+
+| Category | Resource name             | Operation | Provider plugin   |
+| -------- | ------------------------- | --------- | ----------------- |
+| Auth     | gatsbyauthamplifycba7570a | Create    | awscloudformation |
+? Are you sure you want to continue? (Y/n)
+```
+
+You should have a new `auth` folder inside `amplify/backend`.
+
+Go to AWS console `Cognito —> User Pools` and make sure your generated pool is there as well.
+
+### Step 5. Protect the ‘protected-page’
+
+Install new libraries:
+
+```BASH
+yarn add aws-amplify aws-amplify-react
+```
+
+Add the following to `gatsby-browser.js`
+
+```JS
+import Amplify, { Auth } from "aws-amplify"
+import awsConfig from "./src/aws-exports"
+Amplify.configure(awsConfig)
+```
+
+Add `withAuthenticator` to your protected-page:
+
+* import it:
+`import { withAuthenticator } from “aws-amplify-react”`
+
+* wrap the export:
+`export default withAuthenticator(ProtectedPage)`
+
+Now you should be greeted with the login view: [Screenshot: Login view](https://share.getcloudapp.com/BluBLZLk)
+
+Click `Create account`, provide an email address that you have access to (for a confirmation code), have fun!
+
+#### Resources
+
+Gatsby Auth Amplify Starter by nadir Dabit: [gatsby-auth-starter-aws-amplify: Gatsby Starter | GatsbyJS](https://www.gatsbyjs.org/starters/dabit3/gatsby-auth-starter-aws-amplify/)
+
+* Video tutorial by Arbaoui Mehdi: [Gatsby and AWS Amplify Authentication - YouTube](https://www.youtube.com/watch?v=Rrv_rYhAQw0)
+
+* Deploying to AWS Amplify: [Deploying to AWS Amplify | GatsbyJS](https://www.gatsbyjs.org/docs/deploying-to-aws-amplify/)
+
+`#GatsbyNYC`

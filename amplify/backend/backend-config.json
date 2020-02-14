@@ -1,0 +1,10 @@
+{
+	"auth": {
+		"gatsbyauthamplifycba7570a": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": [],
+			"customAuth": false
+		}
+	}
+}
