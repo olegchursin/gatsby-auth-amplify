@@ -2,7 +2,9 @@
 
 ## Create new Gatsby project
 
-`gatsby new gatsby-auth-amplify`
+```BASH
+gatsby new gatsby-auth-amplify
+```
 
 ## Add TS (optional)
 
